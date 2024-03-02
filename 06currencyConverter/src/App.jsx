@@ -4,7 +4,7 @@ import InputAmount from "./components/InputAmount.jsx";
 import SelectCountry from "./components/SelectCountry.jsx";
 import SwitchCurrency from "./components/SwitchCurrency.jsx";
 import { CurrencyContext } from "./context/CurrencyContext.jsx";
-import axios from "axios";
+import axios from "axios"; 
 
 function App() {
   const { 
@@ -25,7 +25,7 @@ function App() {
     if(firstAmount) {
       axios("https://api.freecurrencyapi.com/v1/latest", {
         params: {
-          apikey: "fca_live_krSu73qS4nI78Ym11oDBQl3scLoUs832gTHZMrtK",
+          apikey: import.meta.env.VITE_API_KEY,
           base_currency: codeFromCurrency,
           currencies: codeToCurrency
         }
