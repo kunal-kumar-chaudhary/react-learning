@@ -1,25 +1,38 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Post from './Post'
 import { PostList as PostListData } from '../store/post-list-store'
 import WelcomeMessage from './WelcomeMessage';
+import { set } from 'mongoose';
+import LoadingSpinner from './LoadingSpinner';
+import { useNavigate } from 'react-router-dom';
 
 const PostList = () => {
     const {postList, addInitialPosts} = useContext(PostListData);
-    const handlePostsClick = () => {
-        let newPostList;
-        fetch("https://dummyjson.com/posts").
+    const navigate = useNavigate();
+    const [fetching, setFetching] = useState(false);
+    useEffect(()=>{
+      setFetching(true);
+      const controller = new AbortController();
+      const signal = controller.signal;
+      fetch("https://dummyjson.com/posts", {signal}).
         then((response)=> response.json()).then(
             (data)=> {
                 addInitialPosts(data.posts);
+                setFetching(false);
             }
-        )
-        return newPostList;
-    }
+        );
+
+        return ()=>{
+          console.log("cleaning up useEffect");
+          controller.abort();
+        }
+    }, []);
 
   return (
     <>
-    {postList.length === 0 && <WelcomeMessage onGetPostsClick={handlePostsClick}/>}
-    {postList.map((post) => <Post key={post.id} post={post}/>)}
+    {fetching && <LoadingSpinner />}
+    {!fetching && postList.length === 0 && <WelcomeMessage />}
+    {!fetching && postList.map((post) => <Post key={post.id} post={post}/>)}
     </>
   )
 }

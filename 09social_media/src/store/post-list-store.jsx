@@ -12,16 +12,16 @@ export const PostList = createContext({
 });
 
 const postListReducer = (currPostList, action) => {
-    let newPostList = currPostList;
-    if (action.type === "DELETE_POST"){
-        newPostList = currPostList.filter((post)=> post.id !== action.payload.postId);
-    }
-    else if (action.type === "ADD_INITIAL_POST"){
-        newPostList = action.payload.posts;
-    }
-    else if (action.type === "ADD_POST"){
-        newPostList = [action.payload, ...currPostList];
-    }
+  let newPostList = currPostList;
+  if (action.type === "DELETE_POST") {
+    newPostList = currPostList.filter(
+      (post) => post.id !== action.payload.postId
+    );
+  } else if (action.type === "ADD_INITIAL_POST") {
+    newPostList = action.payload.posts;
+  } else if (action.type === "ADD_POST") {
+    newPostList = [action.payload, ...currPostList];
+  }
 
   return newPostList;
 };
@@ -30,16 +30,21 @@ const PostListProvider = ({ children }) => {
   // we are going to have two actions, one for adding posts and other for deleting posts
   const addInitialPosts = (posts) => {
     dispatchPostList({
-        type: "ADD_INITIAL_POST",
-        payload: {
-            posts
-        }
+      type: "ADD_INITIAL_POST",
+      payload: {
+        posts,
+      },
     });
   };
 
-  const addPosts = (posts)=>{
-    dispatchPostList();
-  }
+  const addPost = (post) => {
+    dispatchPostList({
+      type: "ADD_POST",
+      payload: {
+        post,
+      },
+    });
+  };
 
   const deletePost = (postId) => {
     dispatchPostList({
@@ -49,18 +54,16 @@ const PostListProvider = ({ children }) => {
       },
     });
   };
-  const [postList, dispatchPostList] = useReducer(
-    postListReducer,
-    []
-  );
+  const [postList, dispatchPostList] = useReducer(postListReducer, []);
 
   return (
-    <PostList.Provider value={{ postList, addPosts, addInitialPosts, deletePost }}>
+    <PostList.Provider
+      value={{ postList, addPost, addInitialPosts, deletePost }}
+    >
       {children}
     </PostList.Provider>
   );
 };
-
 
 const DEFAULT_POST_LIST = [
   {
